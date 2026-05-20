@@ -1,0 +1,71 @@
+import {
+  CalendarDays,
+  Download,
+  FileText
+} from "lucide-react"
+
+import type {
+  SavedAIReport
+} from "../types/saved-ai-report"
+
+type Props = {
+  report: SavedAIReport
+}
+
+export function SavedAIReportCard({
+  report
+}: Props) {
+  return (
+    <article className="rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+      <div className="mb-4 flex flex-col justify-between gap-3 md:flex-row md:items-start">
+        <div>
+          <div className="mb-2 flex items-center gap-2 text-blue-600">
+            <FileText size={18} />
+
+            <span className="text-sm font-semibold">
+              Relatório IA
+            </span>
+          </div>
+
+          <h3 className="text-lg font-bold text-blue-950">
+            Estudo de caso
+          </h3>
+
+          <p className="mt-1 text-sm text-zinc-500">
+            Modelo: {report.model_used || "Não informado"}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+          <CalendarDays size={14} />
+
+          {new Date(report.created_at).toLocaleDateString("pt-BR")}
+        </div>
+      </div>
+
+      <div className="max-h-72 overflow-y-auto rounded-2xl bg-slate-50 p-4">
+        <pre className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-700">
+          {report.content}
+        </pre>
+      </div>
+
+      <div className="mt-4 flex flex-col justify-between gap-3 md:flex-row md:items-center">
+        <p className="text-xs text-zinc-500">
+          Tokens usados: {report.total_tokens ?? "não registrado"}
+        </p>
+
+        {report.pdf_path && (
+          <a
+            href={`http://localhost:8000/${report.pdf_path}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center justify-center gap-2 rounded-xl border border-blue-100 px-4 py-2 text-sm font-medium text-blue-700 hover:bg-blue-50"
+          >
+            <Download size={16} />
+            Abrir PDF
+          </a>
+        )}
+      </div>
+    </article>
+  )
+}

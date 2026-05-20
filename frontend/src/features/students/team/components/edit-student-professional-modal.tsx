@@ -1,0 +1,256 @@
+import { useEffect, useState } from "react";
+
+import { useForm } from "react-hook-form";
+
+import type {
+  StudentProfessional,
+  StudentProfessionalRole,
+} from "../types/student-professional";
+
+import { AlertCircle } from "lucide-react";
+import { getApiErrorMessage } from "@/routes/utils/get-api-error-message";
+
+import { useUpdateStudentProfessional } from "../hooks/use-update-student-professional";
+
+type FormData = {
+  role_in_student: StudentProfessionalRole;
+  can_view: boolean;
+  can_register_aba: boolean;
+  can_create_assessment: boolean;
+  can_create_pei: boolean;
+  can_generate_ai_report: boolean;
+  can_view_reports: boolean;
+};
+
+type Props = {
+  studentId: string;
+  professional: StudentProfessional | null;
+  open: boolean;
+  onClose: () => void;
+};
+
+export function EditStudentProfessionalModal({
+  studentId,
+  professional,
+  open,
+  onClose,
+}: Props) {
+  const mutation = useUpdateStudentProfessional(studentId);
+
+  const { register, handleSubmit, reset, setValue } = useForm<FormData>();
+  const [actionError, setActionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (professional) {
+      reset({
+        role_in_student: professional.role_in_student,
+        can_view: professional.can_view,
+        can_register_aba: professional.can_register_aba,
+        can_create_assessment: professional.can_create_assessment,
+        can_create_pei: professional.can_create_pei,
+        can_generate_ai_report: professional.can_generate_ai_report,
+        can_view_reports: professional.can_view_reports,
+      });
+    }
+  }, [professional, reset]);
+
+  function applyRolePreset(selectedRole: StudentProfessionalRole) {
+    if (selectedRole === "support") {
+      setValue("can_view", true);
+      setValue("can_register_aba", true);
+      setValue("can_create_assessment", false);
+      setValue("can_create_pei", false);
+      setValue("can_generate_ai_report", false);
+      setValue("can_view_reports", false);
+    }
+
+    if (selectedRole === "aee") {
+      setValue("can_view", true);
+      setValue("can_register_aba", false);
+      setValue("can_create_assessment", true);
+      setValue("can_create_pei", true);
+      setValue("can_generate_ai_report", true);
+      setValue("can_view_reports", true);
+    }
+
+    if (
+      selectedRole === "psychologist" ||
+      selectedRole === "supervisor" ||
+      selectedRole === "owner"
+    ) {
+      setValue("can_view", true);
+      setValue("can_register_aba", true);
+      setValue("can_create_assessment", true);
+      setValue("can_create_pei", true);
+      setValue("can_generate_ai_report", true);
+      setValue("can_view_reports", true);
+    }
+
+    if (selectedRole === "viewer") {
+      setValue("can_view", true);
+      setValue("can_register_aba", false);
+      setValue("can_create_assessment", false);
+      setValue("can_create_pei", false);
+      setValue("can_generate_ai_report", false);
+      setValue("can_view_reports", false);
+    }
+  }
+
+  async function onSubmit(data: FormData) {
+    if (!professional) return;
+
+    try {
+      setActionError(null);
+
+      await mutation.mutateAsync({
+        studentId,
+        linkId: professional.id,
+        data,
+      });
+
+      onClose();
+    } catch (error) {
+      setActionError(getApiErrorMessage(error));
+    }
+  }
+
+  if (!open || !professional) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4">
+      <div className="w-full max-w-3xl rounded-2xl bg-white p-6 shadow-xl">
+        <div className="mb-6">
+          <h2 className="text-2xl font-bold text-blue-950">
+            Editar permissões
+          </h2>
+
+          <p className="text-sm text-zinc-500">
+            Altere o papel e as permissões deste profissional no aluno.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+          {actionError && (
+            <div className="rounded-xl border border-red-100 bg-red-50 p-4 text-sm text-red-700">
+              <div className="flex items-start gap-3">
+                <AlertCircle size={18} className="mt-0.5 shrink-0" />
+
+                <p>{actionError}</p>
+              </div>
+            </div>
+          )}
+          <div className="rounded-2xl bg-blue-50 p-4">
+            <p className="font-semibold text-blue-950">
+              {professional.user?.name || `Usuário #${professional.user_id}`}
+            </p>
+
+            <p className="text-sm text-blue-700">
+              {professional.user?.email || "Email não informado"}
+            </p>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
+              Papel no aluno
+            </label>
+
+            <select
+              {...register("role_in_student")}
+              onChange={(event) => {
+                const value = event.target.value as StudentProfessionalRole;
+
+                setValue("role_in_student", value);
+                applyRolePreset(value);
+              }}
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 outline-none focus:border-blue-500"
+            >
+              <option value="owner">Responsável principal</option>
+
+              <option value="support">Profissional de apoio</option>
+
+              <option value="aee">Profissional AEE</option>
+
+              <option value="psychologist">Psicólogo</option>
+
+              <option value="supervisor">Supervisor</option>
+
+              <option value="viewer">Visualizador</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <PermissionCheckbox
+              label="Ver aluno"
+              inputProps={register("can_view")}
+            />
+
+            <PermissionCheckbox
+              label="Registrar ABA"
+              inputProps={register("can_register_aba")}
+            />
+
+            <PermissionCheckbox
+              label="Criar avaliação"
+              inputProps={register("can_create_assessment")}
+            />
+
+            <PermissionCheckbox
+              label="Criar PEI"
+              inputProps={register("can_create_pei")}
+            />
+
+            <PermissionCheckbox
+              label="Gerar relatório IA"
+              inputProps={register("can_generate_ai_report")}
+            />
+
+            <PermissionCheckbox
+              label="Ver relatórios"
+              inputProps={register("can_view_reports")}
+            />
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setActionError(null);
+                onClose();
+              }}
+              className="rounded-xl border border-zinc-200 px-5 py-3 text-sm font-medium text-zinc-600 hover:bg-zinc-50"
+            >
+              Cancelar
+            </button>
+
+            <button
+              type="submit"
+              disabled={mutation.isPending}
+              className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {mutation.isPending ? "Salvando..." : "Salvar alterações"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+type PermissionCheckboxProps = {
+  label: string;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
+};
+
+function PermissionCheckbox({ label, inputProps }: PermissionCheckboxProps) {
+  return (
+    <label className="flex items-center justify-between rounded-xl border border-blue-100 p-4 text-sm text-zinc-700">
+      <span>{label}</span>
+
+      <input
+        type="checkbox"
+        {...inputProps}
+        className="h-4 w-4 rounded border-zinc-300 text-blue-600"
+      />
+    </label>
+  );
+}

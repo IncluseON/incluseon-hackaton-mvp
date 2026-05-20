@@ -1,0 +1,12 @@
+{
+    "python.defaultInterpreterPath": "/Users/filipisousa/Documents/NEUROTRACK/backend/.venv/bin/python",
+    "python.analysis.extraPaths": [
+        "/Users/filipisousa/Documents/NEUROTRACK/backend",
+        
+    ],
+
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+
+}
+
