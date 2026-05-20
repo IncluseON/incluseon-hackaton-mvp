@@ -597,11 +597,6 @@ Projeto desenvolvido por estudantes participantes do Hackathon.
 
 | Marcela Victória da Silva Oliveira - Testes, documentação e GitHub | Testes do fluxo do MVP, revisão da documentação, organização do GitHub e preparação da demonstração. |
 
-### Escola
-
-Nome da escola ou instituição.
-
----
 
 ## 16. Versionamento
 
