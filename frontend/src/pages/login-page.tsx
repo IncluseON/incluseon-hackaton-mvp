@@ -250,7 +250,7 @@ export function LoginPage() {
             </div>
 
             <p className="mt-6 text-center text-xs text-zinc-500">
-              NeuroTrack © 2026 — Plataforma de acompanhamento neuroeducacional
+              IncluseON © 2026 — Plataforma de acompanhamento neuroeducacional
             </p>
           </div>
         </section>

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { getApiErrorMessage } from "@/routes/utils/get-api-error-message";
 import { useCreateBehaviorRecord } from "../hooks/use-create-behavior-record";
+import { SCHOOL_ENVIRONMENTS } from "../constants/school-enviroments";
 
 type Props = {
   studentId: string;
@@ -116,11 +117,30 @@ export function CreateBehaviorRecordModal({ studentId, open, onClose }: Props) {
               Ambiente
             </label>
 
-            <input
-              {...register("environment")}
-              className="w-full rounded-xl border border-blue-100 px-4 py-3 outline-none focus:border-blue-500"
-              placeholder="Sala de aula, recreio, refeitório..."
-            />
+            <div>
+              <label className="mb-1 block text-sm font-medium text-zinc-700">
+                Ambiente
+              </label>
+
+              <select
+                {...register("environment")}
+                className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
+              >
+                <option value="">Selecione o ambiente</option>
+
+                {SCHOOL_ENVIRONMENTS.map((environment) => (
+                  <option key={environment} value={environment}>
+                    {environment}
+                  </option>
+                ))}
+              </select>
+
+              {errors.environment && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.environment.message}
+                </p>
+              )}
+            </div>
           </div>
 
           <div>

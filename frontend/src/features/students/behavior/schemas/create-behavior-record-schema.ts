@@ -1,17 +1,13 @@
-import { z } from "zod"
+import { z } from "zod";
+
+import { SCHOOL_ENVIRONMENTS } from "../constants/school-enviroments";
 
 export const createBehaviorRecordSchema = z.object({
-  antecedent: z
-    .string()
-    .min(3, "Descreva o antecedente"),
+  antecedent: z.string().min(3, "Descreva o antecedente"),
 
-  behavior: z
-    .string()
-    .min(3, "Descreva o comportamento"),
+  behavior: z.string().min(3, "Descreva o comportamento"),
 
-  consequence: z
-    .string()
-    .min(3, "Descreva a consequência"),
+  consequence: z.string().min(3, "Descreva a consequência"),
 
   strategy_used: z.string().optional(),
 
@@ -19,12 +15,14 @@ export const createBehaviorRecordSchema = z.object({
     .enum(["true", "false", ""])
     .optional()
     .transform((value) => {
-      if (value === "true") return true
-      if (value === "false") return false
-      return null
+      if (value === "true") return true;
+      if (value === "false") return false;
+      return null;
     }),
 
-  environment: z.string().optional(),
+  environment: z.enum(SCHOOL_ENVIRONMENTS, {
+    message: "Selecione um ambiente válido",
+  }),
 
   people_present: z.string().optional(),
 
@@ -43,11 +41,13 @@ export const createBehaviorRecordSchema = z.object({
 
   function_hypothesis: z.string().optional(),
 
-  observations: z.string().optional()
-})
+  observations: z.string().optional(),
+});
 
-export type CreateBehaviorRecordFormData =
-  z.input<typeof createBehaviorRecordSchema>
+export type CreateBehaviorRecordFormData = z.input<
+  typeof createBehaviorRecordSchema
+>;
 
-export type CreateBehaviorRecordData =
-  z.output<typeof createBehaviorRecordSchema>
+export type CreateBehaviorRecordData = z.output<
+  typeof createBehaviorRecordSchema
+>;

@@ -7,6 +7,23 @@ from pydantic import BaseModel,ConfigDict
 # BASE
 # =====================================
 
+class SchoolEnvironment(str, Enum):
+    CLASSROOM = "Sala de aula"
+    RESOURCE_ROOM = "Sala de recursos"
+    COURTYARD = "Pátio"
+    CAFETERIA = "Refeitório"
+    LIBRARY = "Biblioteca"
+    SPORTS_COURT = "Quadra"
+    HALLWAY = "Corredor"
+    BATHROOM = "Banheiro"
+    SCHOOL_ENTRANCE = "Entrada da escola"
+    SCHOOL_EXIT = "Saída da escola"
+    SCHOOL_TRANSPORT = "Transporte escolar"
+    INDIVIDUAL_SERVICE = "Atendimento individual"
+    EXTERNAL_ACTIVITY = "Atividade externa"
+    OTHER = "Outro"
+    
+
 class BehaviorRecordBase(BaseModel):
 
     antecedent: str
@@ -16,7 +33,7 @@ class BehaviorRecordBase(BaseModel):
     strategy_used: str | None = None
     strategy_effective: bool | None = None
 
-    environment: str | None = None
+    environment: SchoolEnvironment | None = None
     people_present: str | None = None
 
     intensity: int | None = None
@@ -75,4 +92,7 @@ class BehaviorRecordResponse(
     student_id: int
     created_at: datetime
 
-    
+
+from enum import Enum
+
+
