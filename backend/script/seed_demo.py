@@ -1,4 +1,9 @@
 import asyncio
+import sys
+from pathlib import Path
+BASE_DIR = Path(__file__).resolve().parent.parent
+sys.path.append(str(BASE_DIR))
+
 
 from datetime import datetime, date, timedelta
 
@@ -7,6 +12,7 @@ from passlib.context import CryptContext
 from sqlalchemy import select
 
 from database import AsyncSessionLocal
+from security import hash_password,verify_password
 
 from models.models import (
     User,
@@ -20,14 +26,8 @@ from models.models import (
 )
 
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
 
 
-def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
 
 
 async def get_or_create_user(

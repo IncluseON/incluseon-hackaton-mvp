@@ -4,7 +4,7 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from models.models import User,Student
+from models import models
 from config import settings
 from database import Base
 

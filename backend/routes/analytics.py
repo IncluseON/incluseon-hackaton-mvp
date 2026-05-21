@@ -60,9 +60,4 @@ async def get_student_behavior_analytics(
         student_id=student.id
     )
 
-    return StudentBehaviorAnalytics(
-        records_count=analytics["records_count"],
-        average_intensity=analytics["average_intensity"],
-        most_common_environment=analytics["most_common_environment"],
-        most_effective_strategy=analytics["most_effective_strategy"]
-    )
+    return analytics

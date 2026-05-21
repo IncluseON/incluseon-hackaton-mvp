@@ -27,13 +27,7 @@ class StudentProfessionalRole(str, Enum):
     SUPERVISOR = "supervisor"
     VIEWER = "viewer"
 
-class StudentProfessionalRole(str, Enum):
-    OWNER = "owner"
-    AEE = "aee"
-    SUPPORT = "support"
-    PSYCHOLOGIST = "psychologist"
-    SUPERVISOR = "supervisor"
-    VIEWER = "viewer"
+
 
 
 class StudentProfessional(Base):
@@ -125,9 +119,17 @@ class User(Base):
     cascade="all, delete-orphan"
 )
 
-    students: Mapped[list[Student]] = relationship(back_populates="psychologist",cascade="all, delete-orphan")
+    students: Mapped[list["Student"]] = relationship(back_populates="psychologist",cascade="all, delete-orphan")
 
-    role : Mapped[UserRole]=mapped_column(SQLEnum(UserRole,name="user_roles"),default=UserRole.PSYCHOLOGIST)
+    role: Mapped[UserRole] = mapped_column(
+    SQLEnum(
+        UserRole,
+        name="user_roles",
+        values_callable=lambda enum_cls: [item.value for item in enum_cls],
+    ),
+    default=UserRole.PSYCHOLOGIST,
+    nullable=False
+)
     
 
 

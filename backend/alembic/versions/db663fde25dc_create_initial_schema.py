@@ -1,8 +1,8 @@
-"""initial migration
+"""create initial schema
 
-Revision ID: f9b68799dfcf
+Revision ID: db663fde25dc
 Revises: 
-Create Date: 2026-05-18 08:15:49.854638
+Create Date: 2026-05-20 19:31:17.827239
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'f9b68799dfcf'
+revision: str = 'db663fde25dc'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,17 +26,17 @@ def upgrade() -> None:
     sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
     sa.Column('password_hash', sa.String(length=255), nullable=False),
-    sa.Column('role', sa.Enum('ADMIN', 'PSYCHOLOGIST', 'SUPERVISOR', 'SCHOOL', 'GUARDIAN', name='user_roles'), nullable=False),
+    sa.Column('role', sa.Enum('admin', 'psychologist', 'supervisor', 'aee', 'support_professional', 'school', 'guardian', name='user_roles'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
     op.create_table('students',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('age', sa.Integer(), nullable=True),
     sa.Column('psychologist_id', sa.Integer(), nullable=False),
-    sa.Column('age', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('birth_date', sa.Date(), nullable=False),
+    sa.Column('name', sa.String(length=255), nullable=False),
     sa.Column('diagnosis', sa.String(length=255), nullable=True),
     sa.Column('school_name', sa.String(length=255), nullable=True),
     sa.Column('guardian_name', sa.String(length=255), nullable=True),
@@ -45,7 +45,29 @@ def upgrade() -> None:
     sa.Column('sensory_notes', sa.Text(), nullable=True),
     sa.Column('general_observations', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('strengths', sa.String(), nullable=True),
+    sa.Column('learning_profile', sa.String(), nullable=True),
+    sa.Column('preferred_reinforcers', sa.String(), nullable=True),
+    sa.Column('sensory_triggers', sa.String(), nullable=True),
+    sa.Column('communication_style', sa.String(), nullable=True),
+    sa.Column('emotional_regulation_notes', sa.String(), nullable=True),
     sa.ForeignKeyConstraint(['psychologist_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('ai_reports',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('student_id', sa.Integer(), nullable=False),
+    sa.Column('created_by_id', sa.Integer(), nullable=False),
+    sa.Column('report_type', sa.String(length=100), nullable=False),
+    sa.Column('content', sa.Text(), nullable=False),
+    sa.Column('pdf_path', sa.String(length=500), nullable=True),
+    sa.Column('model_used', sa.String(length=100), nullable=True),
+    sa.Column('prompt_tokens', sa.Integer(), nullable=True),
+    sa.Column('completion_tokens', sa.Integer(), nullable=True),
+    sa.Column('total_tokens', sa.Integer(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['created_by_id'], ['users.id'], ),
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('assessments',
@@ -79,14 +101,36 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('student_professionals',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('student_id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('role_in_student', sa.Enum('OWNER', 'AEE', 'SUPPORT', 'PSYCHOLOGIST', 'SUPERVISOR', 'VIEWER', name='student_professional_roles'), nullable=False),
+    sa.Column('can_view', sa.Boolean(), nullable=False),
+    sa.Column('can_register_aba', sa.Boolean(), nullable=False),
+    sa.Column('can_create_assessment', sa.Boolean(), nullable=False),
+    sa.Column('can_create_pei', sa.Boolean(), nullable=False),
+    sa.Column('can_generate_ai_report', sa.Boolean(), nullable=False),
+    sa.Column('can_view_reports', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['student_id'], ['students.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_student_professionals_student_id'), 'student_professionals', ['student_id'], unique=False)
+    op.create_index(op.f('ix_student_professionals_user_id'), 'student_professionals', ['user_id'], unique=False)
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     """Downgrade schema."""
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_index(op.f('ix_student_professionals_user_id'), table_name='student_professionals')
+    op.drop_index(op.f('ix_student_professionals_student_id'), table_name='student_professionals')
+    op.drop_table('student_professionals')
     op.drop_table('behavior_records')
     op.drop_table('assessments')
+    op.drop_table('ai_reports')
     op.drop_table('students')
     op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')

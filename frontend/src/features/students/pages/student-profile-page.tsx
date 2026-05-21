@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
-
 import {
   Activity,
   Brain,
@@ -18,7 +17,7 @@ import { StudentOverview } from "../components/student-overview";
 import { AssessmentsPanel } from "../assessments/components/assessments-panel";
 import { BehaviorRecordsPanel } from "../behavior/components/behavior-records-panel";
 import { StudentTimelinePanel } from "../timeline/components/student-timeline-panel";
-import { StudentAnalyticsPanel } from "../analytics/components/student-analytics-pane";
+import { StudentAnalyticsPanel } from "../analytics/components/student-analytics-panel";
 import { AIReportsPanel } from "../reports/components/ai-reports-panel";
 import { StudentTeamPanel } from "../team/components/student-team-panel";
 
@@ -168,4 +167,3 @@ function StudentProfileNavButton({
     </button>
   );
 }
-
