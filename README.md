@@ -1,6 +1,6 @@
 # IncluseON
 
-Plataforma de acompanhamento educacional inclusivo e colaborativo para registro, análise e organização de informações de alunos acompanhados por equipes escolares, profissionais de apoio, AEE, psicólogos e supervisores.
+Plataforma de acompanhamento educacional inclusivo e colaborativo para registro, análise e organização de informações de alunos acompanhados por equipes escolares, profissionais de apoio, AEE e supervisores.
 
 ---
 
@@ -112,7 +112,7 @@ O Produto Mínimo Viável desenvolvido apresenta as seguintes funcionalidades:
 
 - Vinculação de profissionais ao aluno;
 - Definição de permissões por profissional;
-- Diferenciação entre profissional de apoio, AEE, psicólogo, supervisor e visualizador;
+- Diferenciação entre profissional de apoio, AEE, supervisor e visualizador;
 - Controle de ações como registrar ABA, criar avaliações, gerar relatórios e visualizar relatórios;
 - Feedback visual quando o usuário não possui permissão para realizar uma ação.
 
@@ -125,7 +125,7 @@ A solução é voltada para:
 - escolas;
 - profissionais de Atendimento Educacional Especializado;
 - profissionais de apoio escolar;
-- psicólogos;
+- alunos neurodivergentes do ensino médio;
 - supervisores pedagógicos;
 - equipes multiprofissionais;
 - projetos educacionais voltados à inclusão.
