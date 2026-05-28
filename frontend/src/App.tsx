@@ -11,6 +11,7 @@ import { StudentProfilePage } from "./features/students/pages/student-profile-pa
 import "./index.css"
 import { ProtectedRoute } from "./routes/protected-route"
 import { DashboardLayout } from "./layouts/dashboard-layout"
+import { AppointmentsPage } from "./features/appointments.ts/pages/appointments-page"
 
 export default function App() {
   return (
@@ -49,6 +50,17 @@ export default function App() {
             <ProtectedRoute>
               <DashboardLayout>
                 <StudentProfilePage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/appointments"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <AppointmentsPage />
               </DashboardLayout>
             </ProtectedRoute>
           }
