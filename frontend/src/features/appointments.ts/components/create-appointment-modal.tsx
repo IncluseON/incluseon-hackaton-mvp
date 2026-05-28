@@ -119,9 +119,7 @@ export function CreateAppointmentModal({
 
       const payload = {
         ...data,
-        scheduled_at: new Date(
-          data.scheduled_at
-        ).toISOString()
+        scheduled_at: data.scheduled_at
       }
 
       if (isEditing && appointment) {
