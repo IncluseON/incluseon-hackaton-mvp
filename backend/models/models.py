@@ -7,6 +7,28 @@ from datetime import date,datetime
 from enum import Enum
 from sqlalchemy import Enum as SQLEnum
 
+
+
+
+class AppointmentType(str, Enum):
+    AEE = "aee"
+    SCHOOL_SUPPORT = "school_support"
+    CLASSROOM_OBSERVATION = "classroom_observation"
+    FAMILY_MEETING = "family_meeting"
+    PEDAGOGICAL_MEETING = "pedagogical_meeting"
+    BEHAVIORAL_INTERVENTION = "behavioral_intervention"
+    GUIDANCE = "guidance"
+    OTHER = "other"
+
+
+class AppointmentStatus(str, Enum):
+    SCHEDULED = "scheduled"
+    COMPLETED = "completed"
+    CANCELED = "canceled"
+    PENDING = "pending"
+
+
+
 class UserRole(str, Enum):
     ADMIN = "admin"
     PSYCHOLOGIST = "psychologist"
@@ -131,6 +153,11 @@ class User(Base):
     nullable=False
 )
     
+    appointments: Mapped[list["Appointment"]] = relationship(
+    back_populates="professional",
+    cascade="all, delete-orphan"
+)
+    
 
 
 
@@ -232,6 +259,13 @@ class Student(Base):
     communication_style: Mapped[str | None]
 
     emotional_regulation_notes:Mapped[str | None]
+
+    appointments: Mapped[list["Appointment"]] = relationship(
+    back_populates="student",
+    cascade="all, delete-orphan"
+)
+
+
     
 
 
@@ -466,4 +500,84 @@ class AIReport(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime,
         default=datetime.utcnow
+    )
+
+class Appointment(Base):
+    __tablename__ = "appointments"
+
+    id: Mapped[int] = mapped_column(
+        primary_key=True
+    )
+
+    student_id: Mapped[int] = mapped_column(
+        ForeignKey("students.id"),
+        nullable=False,
+        index=True
+    )
+
+    professional_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"),
+        nullable=False,
+        index=True
+    )
+
+    appointment_type: Mapped[AppointmentType] = mapped_column(
+        SQLEnum(
+            AppointmentType,
+            name="appointment_types"
+        ),
+        nullable=False
+    )
+
+    status: Mapped[AppointmentStatus] = mapped_column(
+        SQLEnum(
+            AppointmentStatus,
+            name="appointment_statuses"
+        ),
+        default=AppointmentStatus.SCHEDULED,
+        nullable=False
+    )
+
+    scheduled_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        nullable=False
+    )
+
+    objective: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    summary: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    observations: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    next_steps: Mapped[str | None] = mapped_column(
+        Text,
+        nullable=True
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    student: Mapped["Student"] = relationship(
+        back_populates="appointments"
+    )
+
+    professional: Mapped["User"] = relationship(
+        back_populates="appointments"
     )
