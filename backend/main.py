@@ -17,6 +17,7 @@ from routes.tasks import router as tasks_router
 from routes.ai_reports import router as ai_reports_router
 from routes.ai_usage import router as ai_usage_router
 from routes.student_professionals import router as student_professionals_router
+from routes.appointments import router as appointments_router
 
 
 
@@ -68,6 +69,7 @@ app.include_router(ai_reports_router)
 app.include_router(ai_reports_router)
 app.include_router(ai_usage_router)
 app.include_router(student_professionals_router)
+app.include_router(appointments_router)
 
 
 @app.get("/")
