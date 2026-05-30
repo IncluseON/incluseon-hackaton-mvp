@@ -90,7 +90,7 @@ export function StudentProfilePage() {
             <StudentProfileNavButton
               active={activeTab === "analytics"}
               icon={<BarChart3 size={18} />}
-              label="Analytics"
+              label="Análise"
               onClick={() => setActiveTab("analytics")}
             />
 

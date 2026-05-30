@@ -57,7 +57,7 @@ export function StudentAnalyticsPanel({
       <section>
         <div className="mb-4">
           <h2 className="text-xl font-bold text-blue-950">
-            Analytics comportamental
+            Análise comportamental
           </h2>
 
           <p className="text-sm text-zinc-500">
@@ -170,100 +170,40 @@ export function StudentAnalyticsPanel({
       <section className="grid grid-cols-1 gap-6 2xl:grid-cols-2">
         <ChartCard
           title="Estratégias e eficácia"
-          description="Compara quantas vezes cada estratégia funcionou ou não funcionou."
+          description="Mostra quais estratégias tiveram melhor resposta nos registros."
+          size="large"
         >
-          {data.strategy_effectiveness.length > 0 ? (
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-              <BarChart
-                data={data.strategy_effectiveness}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="strategy" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-
-                <Bar
-                  dataKey="effective"
-                  name="Funcionou"
-                  fill="#2563eb"
-                  radius={[6, 6, 0, 0]}
-                />
-
-                <Bar
-                  dataKey="not_effective"
-                  name="Não funcionou"
-                  fill="#93c5fd"
-                  radius={[6, 6, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChartMessage message="Ainda não há dados suficientes para comparar as estratégias." />
-          )}
+          <StrategyEffectivenessTable
+            items={data.strategy_effectiveness}
+          />
         </ChartCard>
 
         <ChartCard
           title="Comportamentos mais registrados"
-          description="Mostra quais comportamentos aparecem com maior frequência."
+          description="Ranking dos comportamentos observados com maior frequência."
+          size="large"
         >
-          {data.behavior_frequency.length > 0 ? (
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-              <BarChart
-                data={data.behavior_frequency}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="behavior" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-
-                <Bar
-                  dataKey="total"
-                  fill="#60a5fa"
-                  radius={[8, 8, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChartMessage message="Ainda não há dados suficientes para exibir os comportamentos mais registrados." />
-          )}
+          <RankingList
+            items={data.behavior_frequency}
+            labelKey="behavior"
+            totalKey="total"
+            emptyMessage="Ainda não há dados suficientes para exibir os comportamentos mais registrados."
+          />
         </ChartCard>
       </section>
 
       <section>
         <ChartCard
           title="Antecedentes mais comuns"
-          description="Mostra quais situações costumam acontecer antes dos comportamentos registrados."
+          description="Ranking das situações que mais antecedem os comportamentos registrados."
           size="large"
         >
-          {data.antecedent_frequency.length > 0 ? (
-            <ResponsiveContainer
-              width="100%"
-              height="100%"
-            >
-              <BarChart
-                data={data.antecedent_frequency}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="antecedent" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-
-                <Bar
-                  dataKey="total"
-                  fill="#1d4ed8"
-                  radius={[8, 8, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyChartMessage message="Ainda não há dados suficientes para exibir os antecedentes mais comuns." />
-          )}
+          <RankingList
+            items={data.antecedent_frequency}
+            labelKey="antecedent"
+            totalKey="total"
+            emptyMessage="Ainda não há dados suficientes para exibir os antecedentes mais comuns."
+          />
         </ChartCard>
       </section>
 
@@ -341,7 +281,7 @@ function AnalyticsSummaryCard({
   description: string
 }) {
   return (
-    <div className="`min-h-[160px]` rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
+    <div className="min-h-[160px] rounded-2xl border border-blue-100 bg-white p-5 shadow-sm">
       <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
         {icon}
       </div>
@@ -387,12 +327,168 @@ function ChartCard({
       <div
         className={
           size === "large"
-            ? "h-96 w-full"
+            ? "min-h-96 w-full"
             : "h-80 w-full"
         }
       >
         {children}
       </div>
+    </div>
+  )
+}
+
+function RankingList({
+  items,
+  labelKey,
+  totalKey,
+  emptyMessage
+}: {
+  items: Record<string, string | number>[]
+  labelKey: string
+  totalKey: string
+  emptyMessage: string
+}) {
+  if (items.length === 0) {
+    return (
+      <EmptyChartMessage message={emptyMessage} />
+    )
+  }
+
+  const maxTotal = Math.max(
+    ...items.map((item) => Number(item[totalKey]))
+  )
+
+  const totalSum = items.reduce(
+    (sum, item) => sum + Number(item[totalKey]),
+    0
+  )
+
+  return (
+    <div className="space-y-4">
+      {items.map((item) => {
+        const label = String(item[labelKey])
+        const total = Number(item[totalKey])
+
+        const percentage =
+          totalSum > 0
+            ? Math.round((total / totalSum) * 100)
+            : 0
+
+        const width =
+          maxTotal > 0
+            ? `${(total / maxTotal) * 100}%`
+            : "0%"
+
+        return (
+          <div
+            key={label}
+            className="space-y-2"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="line-clamp-1 text-sm font-medium text-blue-950">
+                {label}
+              </span>
+
+              <span className="shrink-0 text-sm font-semibold text-zinc-500">
+                {total}x • {percentage}%
+              </span>
+            </div>
+
+            <div className="h-3 overflow-hidden rounded-full bg-blue-50">
+              <div
+                className="h-full rounded-full bg-blue-600"
+                style={{
+                  width
+                }}
+              />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function StrategyEffectivenessTable({
+  items
+}: {
+  items: {
+    strategy: string
+    effective: number
+    not_effective: number
+  }[]
+}) {
+  if (items.length === 0) {
+    return (
+      <EmptyChartMessage message="Ainda não há dados suficientes para comparar as estratégias." />
+    )
+  }
+
+  return (
+    <div className="space-y-3">
+      {items.map((item) => {
+        const total =
+          item.effective + item.not_effective
+
+        const successRate =
+          total > 0
+            ? Math.round((item.effective / total) * 100)
+            : 0
+
+        return (
+          <div
+            key={item.strategy}
+            className="rounded-2xl border border-blue-50 bg-slate-50 p-4"
+          >
+            <div className="mb-3 flex flex-col justify-between gap-2 md:flex-row md:items-center">
+              <div>
+                <h4 className="font-bold text-blue-950">
+                  {item.strategy}
+                </h4>
+
+                <p className="text-sm text-zinc-500">
+                  Usada {total} vez{total === 1 ? "" : "es"}
+                </p>
+              </div>
+
+              <span className="rounded-full bg-blue-600 px-3 py-1 text-sm font-semibold text-white">
+                {successRate}% eficaz
+              </span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="rounded-xl bg-emerald-50 p-3 text-emerald-700">
+                <p className="font-semibold">
+                  Funcionou
+                </p>
+
+                <p className="mt-1 text-xl font-bold">
+                  {item.effective}
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-red-50 p-3 text-red-700">
+                <p className="font-semibold">
+                  Não funcionou
+                </p>
+
+                <p className="mt-1 text-xl font-bold">
+                  {item.not_effective}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-3 h-3 overflow-hidden rounded-full bg-red-100">
+              <div
+                className="h-full rounded-full bg-emerald-500"
+                style={{
+                  width: `${successRate}%`
+                }}
+              />
+            </div>
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -403,7 +499,7 @@ function EmptyChartMessage({
   message: string
 }) {
   return (
-    <div className="flex h-full items-center justify-center rounded-xl bg-blue-50/50 p-6 text-center">
+    <div className="flex h-full min-h-72 items-center justify-center rounded-xl bg-blue-50/50 p-6 text-center">
       <p className="max-w-sm text-sm text-zinc-500">
         {message}
       </p>

@@ -11,7 +11,13 @@ import { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { getApiErrorMessage } from "@/routes/utils/get-api-error-message";
 import { useCreateBehaviorRecord } from "../hooks/use-create-behavior-record";
-import { SCHOOL_ENVIRONMENTS } from "../constants/school-enviroments";
+import {
+  ANTECEDENT_CATEGORIES,
+  BEHAVIOR_CATEGORIES,
+  FUNCTION_HYPOTHESES,
+  SCHOOL_ENVIRONMENTS,
+  STRATEGY_OPTIONS,
+} from "../constants/behavior-record-options";
 
 type Props = {
   studentId: string;
@@ -85,19 +91,55 @@ export function CreateBehaviorRecordModal({ studentId, open, onClose }: Props) {
               </div>
             </div>
           )}
-          <TextAreaField
-            label="Antecedente"
-            error={errors.antecedent?.message}
-            placeholder="O que aconteceu antes? Qual era o contexto, demanda, ambiente ou mudança de rotina?"
-            register={register("antecedent")}
-          />
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
+              Antecedente / gatilho
+            </label>
 
-          <TextAreaField
-            label="Comportamento"
-            error={errors.behavior?.message}
-            placeholder="Descreva o comportamento observado de forma objetiva."
-            register={register("behavior")}
-          />
+            <select
+              {...register("antecedent")}
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
+            >
+              <option value="">Selecione o antecedente</option>
+
+              {ANTECEDENT_CATEGORIES.map((antecedent) => (
+                <option key={antecedent} value={antecedent}>
+                  {antecedent}
+                </option>
+              ))}
+            </select>
+
+            {errors.antecedent && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.antecedent.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-zinc-700">
+              Comportamento observado
+            </label>
+
+            <select
+              {...register("behavior")}
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
+            >
+              <option value="">Selecione o comportamento</option>
+
+              {BEHAVIOR_CATEGORIES.map((behavior) => (
+                <option key={behavior} value={behavior}>
+                  {behavior}
+                </option>
+              ))}
+            </select>
+
+            {errors.behavior && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.behavior.message}
+              </p>
+            )}
+          </div>
 
           <TextAreaField
             label="Consequência"
@@ -106,17 +148,32 @@ export function CreateBehaviorRecordModal({ studentId, open, onClose }: Props) {
             register={register("consequence")}
           />
 
-          <TextAreaField
-            label="Estratégia utilizada"
-            placeholder="Qual manejo foi usado? Comunicação visual, pausa sensorial, redirecionamento..."
-            register={register("strategy_used")}
-          />
-
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700">
-              Ambiente
+              Estratégia utilizada
             </label>
 
+            <select
+              {...register("strategy_used")}
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
+            >
+              <option value="">Selecione a estratégia</option>
+
+              {STRATEGY_OPTIONS.map((strategy) => (
+                <option key={strategy} value={strategy}>
+                  {strategy}
+                </option>
+              ))}
+            </select>
+
+            {errors.strategy_used && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.strategy_used.message}
+              </p>
+            )}
+          </div>
+
+          <div>
             <div>
               <label className="mb-1 block text-sm font-medium text-zinc-700">
                 Ambiente
@@ -192,29 +249,51 @@ export function CreateBehaviorRecordModal({ studentId, open, onClose }: Props) {
 
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700">
-              A estratégia funcionou?
+              Estratégia utilizada
             </label>
 
             <select
-              {...register("strategy_effective")}
-              className="w-full rounded-xl border border-blue-100 px-4 py-3 outline-none focus:border-blue-500"
+              {...register("strategy_used")}
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
             >
-              <option value="">Não informado</option>
-              <option value="true">Sim</option>
-              <option value="false">Não</option>
-            </select>
-          </div>
+              <option value="">Selecione a estratégia</option>
 
+              {STRATEGY_OPTIONS.map((strategy) => (
+                <option key={strategy} value={strategy}>
+                  {strategy}
+                </option>
+              ))}
+            </select>
+
+            {errors.strategy_used && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.strategy_used.message}
+              </p>
+            )}
+          </div>
           <div>
             <label className="mb-1 block text-sm font-medium text-zinc-700">
-              Hipótese funcional
+              Hipótese da função do comportamento
             </label>
 
-            <input
+            <select
               {...register("function_hypothesis")}
-              className="w-full rounded-xl border border-blue-100 px-4 py-3 outline-none focus:border-blue-500"
-              placeholder="Fuga de demanda, acesso à atenção, sensorial..."
-            />
+              className="w-full rounded-xl border border-blue-100 px-4 py-3 text-sm outline-none focus:border-blue-500"
+            >
+              <option value="">Selecione a hipótese</option>
+
+              {FUNCTION_HYPOTHESES.map((hypothesis) => (
+                <option key={hypothesis} value={hypothesis}>
+                  {hypothesis}
+                </option>
+              ))}
+            </select>
+
+            {errors.function_hypothesis && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.function_hypothesis.message}
+              </p>
+            )}
           </div>
 
           <div className="md:col-span-2">
